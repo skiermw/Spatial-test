@@ -1,5 +1,5 @@
-from py2neo 	import neo4j, rel, node, cypher
-
+from neo4jrestclient.client import GraphDatabase
+import json
 
 def main():
 	print 'spatial-setup.py starting...'
@@ -9,19 +9,27 @@ def main():
 def connect():
     try:
         #graph_db = neo4j.GraphDatabaseService("http://localhost:7474/db/data/")
-        neo4j.authenticate("spatial.sb01.stations.graphenedb.com:24789/db/data/", "Spatial", "KLc3m79hDABiUZija6xv")
+		url = "http://Spatial:KLc3m79hDABiUZija6xv@spatial.sb01.stations.graphenedb.com:24789/db/data/"
+        #neo4j.authenticate("spatial.sb01.stations.graphenedb.com:24789/db/data/", "Spatial", "KLc3m79hDABiUZija6xv")
 
-        graph_db = neo4j.GraphDatabaseService("http://Spatial:KLc3m79hDABiUZija6xv@spatial.sb01.stations.graphenedb.com:24789/db/data/")
-        print 'graph_db= %s' % graph_db
+		graph_db = GraphDatabase(url, username="Spatial", password="KLc3m79hDABiUZija6xv")
+		print 'graph_db= %s' % graph_db
     except rest.ResourceNotFound:
         print 'Database service not found'
     return graph_db
  
-def load_db(graph_db):
-        add_query = "CREATE (n:Address { street : '5601 Majestic Circle', city : 'Columbia', state : 'MO', zip : '65203'})"
-        print 'In load_db()'
-        create_query = neo4j.CypherQuery(graph_db, add_query)
-        print 'create_query = %s' % create_query
+def load_db(gdb):
+		#addresses = gdb.labels.create("Address")
+		response = []
+		mark = gdb.nodes.create(name="Mark Workman", street='5601 Majestic Circle', city='Columbia', state='MO', zip='65203', lat=38.891350, lon=-92.402642)
+		
+		# Create the Spatial Index
+		return_val = gdb.extensions.SpatialPlugin.addSimplePointLayer(layer="geom", lat="lat", lon="lon")
+		# Add the node created before to the index
+		response = gdb.extensions.SpatialPlugin.addNodeToLayer(layer="geom", node=mark)
+		
+		nodes = gdb.extensions.SpatialPlugin.findGeometriesWithinDistance(layer="geom", pointX=38.89, pointY=-92.40, distanceInKm=100)
+		print nodes
         
     
  
