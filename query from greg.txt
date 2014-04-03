@@ -1,0 +1,334 @@
+set schema = 'SHELTRT';
+select 
+   spa01.state_cd as state
+   ,pol01.agent_no as agent
+   ,substr(rate_class_cd,1,3) as Rate_Cl
+   ,first_pol_eff_dt
+   ,term_eff_dt
+   ,term_exp_dt
+    ,SUBSTR(spa01.POLICY_NO, 4, 2) || '-1' ||                            
+        CASE SUBSTR(spa01.POLICY_NO, 1, 1)                              
+                WHEN '1' THEN '-C-'                                     
+                ELSE '-'                                                
+        END ||                                                          
+        STRIP(SUBSTR(spa01.POLICY_NO, 6, 9), L, '0') || '-' ||          
+        STRIP(SUBSTR(spa01.POLICY_NO, 15, 4), L, '0') AS policy_no_format
+   ,spa01.policy_no as policy_no_unformat
+   ,spa01.policy_id   
+   ,CASE 
+     when spa01.FAMILY_NO = '000001000' then 'CMPY CAR (SHELTER)'     
+     when spa01.FAMILY_NO = '000140775' then 'CMPY CAR (SHELTER)'     
+     when spa01.FAMILY_NO = '000993228' then 'CMPY CAR (CU)'
+     when spa01.FAMILY_NO = '003732796' then 'CMPY CAR (BANK)'                                   
+     when make_nm = 'OPERA' then 'OPERATOR'
+     WHEN camper_cd = '2' THEN 'MOTORHOME'                     
+     WHEN SUBSTR(rate_class_cd,1,2) = 'CC' THEN 'LIM USE/ANTIQUE'  
+     WHEN camper_cd = '4' THEN 'FULL USE CLASSIC'              
+     WHEN camper_cd = '5' and SUBSTR(rate_class_cd,1,1) = '1' THEN '25% TRAILER (COMM)'     
+     WHEN camper_cd = '5' and SUBSTR(rate_class_cd,1,1) = '2' THEN '25% TRAILER (COMM)'      
+     WHEN camper_cd = '5' THEN '25% TRAILER (PPA)'                   
+     WHEN camper_cd = 'A' THEN 'MCY - ALL TERRAIN'
+     WHEN camper_cd = 'B' THEN 'MCY - STREET BIKE (ELECTRIC)'
+     WHEN camper_cd = 'C' THEN 'MCY - SCOOTER (MOTORIZED)'
+     WHEN camper_cd = 'D' THEN 'MCY - DIRT BIKE (OFF ROAD)'
+     WHEN camper_cd = 'E' THEN 'MCY - DUAL BIKE (ROAD)'
+     WHEN camper_cd = 'F' THEN 'MCY - GOLF CART (ELECTRIC)'
+     WHEN camper_cd = 'G' THEN 'MCY - GOLF CART (GASOLINE)'
+     WHEN camper_cd = 'M' THEN 'MCY - SCOOTER (ELECTRIC)'
+     WHEN camper_cd = 'S' THEN 'MCY - STREET BIKE (ROAD)'
+     WHEN camper_cd = 'T' THEN 'MCY - ALL TERRAIN (ELECTRIC)'
+     WHEN camper_cd = 'U' THEN 'MCY - OTHER UTILITY (GASOLINE)'
+     WHEN camper_cd = 'V' THEN 'MCY - OTHER UTILITY (ELECTRIC)'
+     WHEN SUBSTR(rate_class_cd,1,1) = 'S' THEN 'BUS'               
+     WHEN SUBSTR(rate_class_cd,1,1) = 'U' THEN 'BUS'               
+     WHEN SUBSTR(rate_class_cd,1,1) = 'V' THEN 'BUS'                 
+     WHEN SUBSTR(rate_class_cd,1,1) = 'N' THEN 'MOTORCYCLE'          
+     WHEN SUBSTR(rate_class_cd,1,1) = '1' THEN 'COMM TRUCK/SEMI'     
+     WHEN SUBSTR(rate_class_cd,1,1) = '2' THEN 'COMM TRUCK/SEMI'     
+     WHEN SUBSTR(rate_class_cd,1,1) = '7' THEN 'TRAILER (SEMI-SINGLE)'        
+     WHEN SUBSTR(rate_class_cd,1,1) = '8' THEN 'TRAILER (SEMI-DUAL)'              
+     WHEN SUBSTR(rate_class_cd,1,1) = 'A' THEN 'ASSIGNED RISK'       
+     WHEN SUBSTR(rate_class_cd,1,2) = 'Z1' THEN 'TRAILER (Z1-HOUSE)'       
+     WHEN SUBSTR(rate_class_cd,1,2) = 'Z2' THEN 'TRAILER (Z2-UTILITY)'       
+     WHEN SUBSTR(rate_class_cd,1,2) = 'Z5' THEN 'SNOWMOBILE'         
+     WHEN SUBSTR(rate_class_cd,1,2) = 'T9' THEN 'TRAILER (SEMI-GF)'   
+     WHEN SUBSTR(rate_class_cd,1,2) = 'G9' THEN 'TRAILER (SEMI-GF)' 
+     WHEN SUBSTR(rate_class_cd,1,2) = 'F9' THEN 'TRAILER (SEMI-GF)' 
+     WHEN SUBSTR(rate_class_cd,1,2) = 'Y9' THEN 'TRAILER (SEMI-GF)' 
+     WHEN SUBSTR(rate_class_cd,1,2) = 'T ' THEN 'SEMI TRACTOR' 
+     WHEN SUBSTR(rate_class_cd,1,2) = 'Y ' THEN 'SEMI TRACTOR' 
+     WHEN SUBSTR(rate_class_cd,1,2) = 'E ' THEN 'COMM TRUCK'   
+     WHEN SUBSTR(rate_class_cd,1,2) = 'F ' THEN 'COMM TRUCK'     
+     WHEN SUBSTR(rate_class_cd,1,2) = 'G ' THEN 'COMM TRUCK'   
+     WHEN SUBSTR(rate_class_cd,1,1) = 'L' THEN 'BUSINESS USE'    
+     WHEN SUBSTR(rate_class_cd,1,2) = 'T2' THEN 'BUSINESS USE'   
+     WHEN SUBSTR(rate_class_cd,1,2) = 'J2' THEN 'BUSINESS USE'   
+     ELSE 'PPA'                                                 
+   END AS VEHICLE_TYPE
+   ,Case spa01.policy_status_cd 
+      when 'A' then 'Active'
+      when 'C' then 'Rein of Cancel'
+      when 'D' then 'Rein of Temp Lps'
+      when 'G' then 'Pending Application'
+      when 'H' then 'Billed'
+      when 'I' then 'Pending (Pre-Accepted)'
+      when 'P' then 'Rein of Perm Lps'
+      when 'R' then 'Declined Flat'
+      when 'S' then 'Declined ProRata'
+      when 'T' then 'Transferred'
+      when 'U' then 'Temp Lapsed'
+      when 'V' then 'Cancelled Short Rate'
+      when 'W' then 'Cancelled Flat'
+      when 'X' then 'Cancelled ProRata'
+      when 'Y' then 'Permanent Lapsed'
+      when 'Z' then 'Transferred'
+      else ''
+   end as Status
+   ,case pay_plan_type_cd
+      when '3' then 'Monthly'
+      when '1' then 'AIP'
+      when '0' then 'Normal'
+      when '2' then 'AR_Qrtly'
+      else pay_plan_type_cd
+   end as payment_plan
+   ,pol01.tier_cd
+   ,pol01.INSURED_NM
+   ,pol01.INS_ADDRESS
+   ,pol01.ins_city
+   ,pol01.ins_state
+   ,pol01.TOTAL_PREMIUM_AM
+
+from
+   SPA01_POLICY spa01
+--   ,SPA03_POL_PARTY spa03
+   ,SPA05_policy_term spa05
+   ,SPA10_risk_item spa10
+   ,SPA18_risk_item_t spa18
+   ,SPA25_payment_plan spa25
+--   ,SPA28_STOP spa28
+
+--   ,SPA226_paymnt_h spa226
+   ,Pol01_Policy pol01
+   ,POL80_VEH_DETAIL as pol80
+   ,POL81_COV_DETAIL as pol81
+--   ,POL75_Bill as pol75
+--   ,POL82_POL_DRIVER as pol82
+--   ,POL83_Drv_Acc_Viol as pol83
+--   ,POL84_Pol_Loss_Pay as pol84
+--   ,POL85_Pol_Endrsmnt as pol85
+--   ,pol90_Billed_pol as pol90
+--   ,pol91_Billed_Veh as pol91
+--   ,pol75_bill pol75
+--   ,POL82_POL_DRIVER as pol82
+--   ,POL83_Drv_Acc_Viol as pol83
+--   ,POL84_Pol_Loss_Pay as pol84
+--   ,AUT10_POLICY aut10
+--   ,AUT15_VEHICLE aut15
+--   ,AUT16_DRIVER aut16
+--   ,AUT18_POL_PARTY aut18
+--   ,AUT21_ENDORSEMENT aut21
+where
+   spa01.line_id = '10'
+--   and spa01.policy_status_cd in('A', 'C', 'D', 'P', 'H', 'G', 'I', 'U')
+--   and spa01.policy_status_cd in  ('W', 'X', 'V', 'R', 'S')
+   and spa01.policy_status_cd in  ('A')
+   and spa01.state_cd in ('24')
+--   and spa01.policy_status_cd in  ('T', 'Y', 'Z')
+--   and term_exp_dt > current date + 180 days
+   and spa01.policy_id = spa25.policy_id
+--   and spa01.policy_id = spa03.policy_id
+   and spa01.policy_id = spa05.policy_id
+   and spa05.billing_cycle_cd = 'C'
+   and spa01.policy_id = spa10.policy_id
+--   and spa01.policy_id = spa28.policy_id
+   and spa10.risk_item_id = spa18.risk_item_id
+   and spa18.billing_cycle_cd = 'C'
+   and spa01.policy_no = pol01.policy_no
+   and spa01.policy_no = pol80.policy_no
+   and spa01.policy_no = pol81.policy_no
+   and spa01.policy_no not in
+   (
+    '0000'
+   )  
+--   and substr(pol01.INSURED_NM,1,1) in ('D', 'E', 'F', 'G', 'H', 'I', 'J')
+--   AND not EXISTS (SELECT 1 from SPA29_ERROR spa29 where spa29.policy_id = spa01.policy_id)
+--   AND EXISTS (SELECT 1 from SPA29_ERROR spa29 where spa29.policy_id = spa01.policy_id and substr(spa29.error_cd,1,3) = 'ENB')
+--     and spa01.state_cd not in ('03','05', '12')
+--   and spa01.policy_id = spa226.policy_id
+--   and spa01.policy_no = pol75.policy_no
+--   and spa01.policy_no = pol82.policy_no
+--   and spa01.policy_no = pol83.policy_no
+--   and spa01.policy_no = pol84.policy_no
+--   and spa01.policy_no = pol85.policy_no
+--   and spa01.policy_no = pol90.policy_no
+--   and spa01.policy_no = pol91.policy_no
+--   and spa01.NOTIFY_PAID_IND = 'Y' 
+--   and spa01.NOTIFY_LAPSE_IND = 'Y' 
+--  and spa01.PREBILL_NOTIFY_IND = 'Y'
+--  and spa01.VOID_CANCEL_OK_IND = 'Y'
+--  and STOP_TYPE_CD = 'E' and spa28.employee_No is not null and spa28.employee_No <> '000000'
+--  and STOP_TYPE_CD = 'P'
+--   POL01 Fields   ----------------------------------------
+--   and pol01.ALT_MPP_FAMILY_NO <> ''
+--   and pol01.CMPN_POL_DISCOUNT = 'Y'
+--   and pol01.CMPN_LIFE_DISCOUNT = 'Y'
+--   and pol01.ALT_PAYOR_NM <> '' and pol01.ALT_PAYOR_NM like '%,%'
+--   and pol01.CLAIMS_PRESENT_IND = 'Y'
+--   and pol01.LAST_CHRG_CLAIM_DT is not null
+--   and pol01.NUM_CHRG_CLAIMS <> 0
+--   and pol01.RATING_CD <> 1
+--   and pol01.ISSUE_CD <> 1
+--   and pol01.UNDRWRIT_NOTES_CD not in ('1', '8')
+--   and pol01.CODE1_VALDTION_CD not in ('0', '','1','2','3','6','4','9')
+--   and pol01.ST_SURCHG_EXMP_CD not in ('', 'N')
+--   and pol01.EXTENDED_EXP_DT is not null
+--   and pol01.UNPROC_PREM_AM > 0.00
+--   and pol01.BARCODED_PAY_AM > 0.00
+--   and pol01.LATE_FEE_AM > 0.00
+--   and pol01.PREBILLED_IND <> 'N'
+--   and pol01.PARTY_TYPE_CD NOT IN ('I', 'B','','T')
+--   and pol01.REINSUR_IND ='3'
+--   and pol01.REINSUR_IND not in ('0','')
+--   and pol01.DBA_CARRIER_INFO <> ''
+--   Vehicle Types   --------------------------------------
+--   and rate_class_grp_cd = 'A'
+--   and SUBSTR(rate_class_cd,1,1) in ('S', 'U', 'V') 
+--  and make = 'OPERA'
+--  and SUBSTR(rate_class_cd,1,2) = 'Z5'
+--  and pol80.VEHICLE_CD = 'G'
+--     and spa01.FAMILY_NO in ('000001000', '000140775', '000993228', '003732796')
+--   POL80 Fields   --------------------------------------
+--  and pol80.PRIOR_DAMAGE_CD not in ('0')
+--  and DEF_DRIVER_CERT_DT is not null
+--  and ALT_GARAGE_CITY <> ''
+--  and VIOLATION_POINTS > 0
+--  and rate_class_grp_cd = 'A'
+--  and (LIC_REINSTATE_DT is not null OR felony_ind not in ('', 'N') OR mental_impair_ind not in ('', 'N') OR prescribd_med_ind not in ('', 'N') OR non_us_citizn_ind not in ('', 'N'))
+--  and CAMPER_MODEL_YR <> ''
+--  and SR22_DRIVERS like '%/%
+--  and ACC_THIS_TERM > 0
+--  and REMARKS <> ''
+--  and pol80.FORGIVEN_ACC_DT is not null
+--   and CITY_TAX_AM > 0
+--   and COUNTY_TAX_AM > 0
+--   and one_way_mileage > 0 and annual_mileage > 0 and annual_bus_mileage > 0
+--   GrandFathered Rate Classes -------
+--     and SUBSTR(rate_class_cd,1,2) in ('T9','G9','F9','Y9','T ','Y ', 'G ', 'F ') 
+-- Occassional Young Driver Rate Classes
+--   and SUBSTR(rate_class_cd,1,2) in ('DB','WA','DD','WB','TR','FF','T3','F3')
+--   and pol82.birth_dt > current date - 26 years
+--   and pol82.birth_dt < current date - 15 years
+--  Discounts & Surcharges -----------------------------------------
+-- and pass_restrnt_cd not in ('2','3','4')
+-- and anti_theft_disc NOT IN ('','0','N')
+-- and window_id_ind = '1'
+-- and good_student_disc = '1'
+-- and driver_train_disc = '1'
+-- and defens_driver_disc = 'Y' and def_driver_cert_dt > '2011-01-01'
+-- and safe_drvr_disc_cd not in ('', '0')
+-- and military_disc_ind = 'Y'
+-- and multi_cov_disc_ind = 'Y'
+-- and multi_car_ind not in ('')
+-- and pol80.fleet_plan_cd = '7'
+--   and state_cd = '41'and POL80.rate_class like 'N%' and POL80.DEF_DRIVER_CERT_DT >'2009-01-01'
+--  and state_cd = '35'and POL80.rate_class like 'N%' and POL80.DEF_DRIVER_CERT_DT >'2009-01-01'
+-- and habitl_offndr_sur = 'Y'
+-- and high_perf_ind = '1'
+-- and finan_resp_ind = 'Y'
+-- and EXTENSIVE_TRLR_USE = 'Y'
+--   POL75 Supplemental Bill Fields ----------------------------------------
+--   and (notice_type_cd = '12' 
+-- or notice_type_cd = '16' 
+-- or notice_type_cd = '22' 
+-- or notice_type_cd = '24' 
+-- or notice_type_cd = '26' 
+-- or notice_type_cd = '34' 
+-- or notice_type_cd = '36' 
+-- or notice_type_cd = '42' 
+-- or notice_type_cd = '46')
+--   POL82 Fields   --------------------------------------
+--   and GOOD_STUDENT_CD not in ('','0','1','3')
+--  and pol80.GS_RECERT_IND = 'Y'
+--   and LAST_MVR_DT is not null
+--   and DRIV_LICENSE_STATE = '00'
+--   POL81 Fields   --------------------------------------
+--   and pol81.BI_prem_Am > 0 and pol81.PD_Prem_Am > 0 and pol81.Med_pay_prem_am > 0 and pol81.um_prem_am > 0 and pol81.comp_prem_am > 0 and pol81.coll_prem_am > 0
+--   and pol81.ers_prem_am > 0 and pol81.acc_death_prem_am > 0
+--   and PIP_Deduct > 0
+--   and pol81.DI_WORK_LIMIT > 0 and pol81.UIM_PER_OCCUR > 0 and pol81.UMPD_LIMIT > 0
+--   and pol81.RENT_REIMBURSEMNT > 0 and pol81.LOSS_OF_USE_LIMIT > 0 and EMP_NON_OWNED_IND = 'Y' and drive_other_car = 'Y'
+--   and PIP_COV_CD = 'P4'
+--   and ELECT_EQUIP_LIMIT > 0
+--   and PIP_TORT_LIMIT_CD not in ('','N')
+--   and LA_UMBI_CD = '1'
+--   and ALL_REJ_ROLLON_CD = '9'
+--   and pol81.SNGLE_LMT_LIAB_IND = 'Y'
+--   and pol81.EMP_NON_OWNED_IND<>''
+--   and CAMPER_MODEL_YR <> ''
+--   and CUSTOMIZATION_IND = 'Y'
+--   and EQUIPMENT_DESC <> ''
+--   and pol81.DRIVE_OTHER_CAR='Y'
+--   POL83 Fields Accidents & Violations ----------------------------
+--    and pol83.type_cd_1 = '22010' and pol83.occur_date_1 > '2009-01-01'
+--  and pol83.type_cd_1 = '90000' and pol83.occur_date_1 > '2009-01-01'
+--   POL90 Next Term Fields   ----------------------------------------
+--   and pol90.total_premium_am = 0 and issue_cd = 1 and pol91.bi_per_person <> 0
+--  and pol90.policy_term not in ('', '00') AND pol90.policy_term = pol01.Policy_term
+--   and pol90.Tier_cd not in ('', '0000') and pol90.tier_cd <> pol01.Tier_cd
+--   and pol90.Cmpn_Pol_Discount not in ('N', '') and pol90.Cmpn_Pol_Discount <> pol01.Cmpn_Pol_Discount
+--   and pol90.Cmpn_Life_Discount not in ('N', '') and pol90.Cmpn_Life_Discount <> pol01.Cmpn_Life_Discount
+--   POL91 Next Term Fields   ----------------------------------------
+--   and pol91.Rate_class <> '' and substr(pol91.Rate_class,1,3) <> substr(pol80.Rate_class,1,3)
+--   and pol91.Safe_drvr_Disc_cd not in ('', '0', 'N') and pol91.Safe_drvr_Disc_cd = pol80.Safe_drvr_Disc_cd
+--   and pol91.Military_Disc_ind not in ('','N') and pol91.Military_Disc_ind <> pol80.Military_Disc_ind
+--   and pol91.Military_Disc_ind not in ('','N')
+--   POL85 Endorsement Specifics --------------------------------------
+--   Special Equipment (SPEQ)
+--   and endrsmnt_no in ('A9277A', 'A7240A')
+--   Special Equipment (ADVE)
+--   and endrsmnt_no in ('S9960A', 'S9994A')
+--   Stated Amount (STAM)
+--   and endrsmnt_no in ('S9928A', 'S9981A')
+--   UMPD
+--   and endrsmnt_no in ('A6750A', 'S2181A','S2144A','S2166A','S2120A')
+--   UIM
+--   and endrsmnt_no in ('S2146A', 'S3114A','S3105A','A2269A','A7065A','A7353A','A5928A','A5996A')
+--   PIP
+--   and endrsmnt_no in ('S2214A')
+--   PIPA
+--   and endrsmnt_no in ('S2215A','S2217A')
+--   PIPC & PIPD
+--   and endrsmnt_no in ('S2216A')
+--   Economic UM
+--   and ENDRSMNT_NO = 'A5101A'
+--   Hired Auto
+--  and ENDRSMNT_NO = 'A9138A'
+--  DI
+--  and ENDRSMNT_NO in ('A1762A','A1765A','A2102A','A2105A','A5704A','A5705A','A5734A','A5735A')
+-- AD Names
+--     and ENDRSMNT_NO = 'A9018A' and PARTY_NAME<>''
+--  Additional Interest
+--     and ENDRSMNT_NO = 'A6032A' and pol85.PARTY_NAME<>'' and pol85.Party_Name like '%,%'
+-- SPA27 Payment Information ---------------------------------
+--   and spa226.PAYMENT_Type_Cd not in (-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,6,7,8)
+--   and spa226.payment_type_cd = 6
+-- and spa226.LATE_FEE_IND = 'Y'
+--   and Loss_Payee_nm <> '' and loss_payee_nm like '%,%'
+-- AUT10 ADE Data --------------------------------------------------------------------------------
+--   and spa01.policy_no = aut10.policy_no
+--   and aut10.FAMILY_NO <> ''
+--   and spa01.policy_no = aut15.policy_no
+--   and spa01.policy_no = aut16.policy_no
+--   and spa01.policy_no = aut18.policy_no and aut18.PARTY_TYPE_CD = 'LPY'
+--   and spa01.policy_no = aut21.policy_no
+--   and substr(aut10.INSURED_LONG_NM,65,1) <> ''
+--   and aut15.COST_SYMBOL > '100'
+-- and not exists 
+-- (
+--      select 1 
+--      from SPA30_REQUEST spa30
+--         where spa01.policy_id = spa30.policy_id
+--         and spa30.last_update_ts > '2013-06-19-00.00.00.000001'
+--  )
+fetch first 200 rows only
+with ur

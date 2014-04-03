@@ -1,0 +1,19 @@
+set schema = 'SHELTRT';
+select 
+   	policy_no, 
+	agent_no, 
+	line_id, 
+	family_no, 
+	status_cd, 
+	total_premium_am, 
+	tier_cd, 
+	ins_address
+	ins_city
+	ins_state
+from
+ 	pol01_policy
+where 
+   	agent_no = '65203' AND status_cd = 'A'
+fetch first 200 rows only
+with ur;
+

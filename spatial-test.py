@@ -10,7 +10,7 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def show_map():
-    return render_template('show_thornbrook.html')
+    return render_template('show_map_enter_drag.html')
 
 
 if __name__ == '__main__':
