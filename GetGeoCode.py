@@ -1,5 +1,5 @@
-
-import requests, csv
+from xml.dom import minidom
+import requests
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
                 'tieBreakingStrategy':'',
                 'census': 'false',
                 'censusYear': '2010',
-                'format': 'csv',
+                'format': 'xml',
                 'includeHeader': 'false',
                 'notStore': 'true'
                 }
@@ -29,18 +29,16 @@ def main():
 
         # Make the POST request here, passing body as the data:
         response = requests.post(url, body)
-        return_data = response.text
-        reader = csv.reader(return_data, delimiter=',')
-        #print reader.next()
-        for row in reader:
-                print row
-                
-             
-        
         print response
-        print 'response status = %s' % response.status_code
-        print 'response text = %s' % response.text
+        print response.headers
+        return_xml = response.text[3:]
+        print return_xml
         
+        geo_info = minidom.parseString(return_xml)
+        
+        lat = geo_info.getElementsByTagName('Latitude')
+        lng = geo_info.getElementsByTagName('Longitude')
+        print 'lat = %f  lng = %f' % {lat, lng}
    
  
  
