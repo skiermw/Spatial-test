@@ -30,7 +30,8 @@ def load_file():
         reclen= 205
         
         cobolFile= file( db2file, 'rb' )
-        
+        csvfile = open('eggs.csv', 'wb')
+        csvwriter = csv.writer(csvfile, delimiter='|')
         for recBytes in yieldRecords(cobolFile, reclen):
                 record = dict()
                 for name, start, size in layout:
@@ -39,11 +40,13 @@ def load_file():
 
                 #print 'record = %s' % record
                 print "list(record.values()) = %s" % list(record.values())
-                
+                csvwriter.writerow(list(record.values()))
+''' 
                 with open('eggs.csv', 'wb') as csvfile:
-                        csvwriter = csv.writer(csvfile, delimiter='|') 
-                        csvwriter.writerows(list(record.values()))
-               
+                        csvwriter = csv.writer(csvfile, delimiter='|')
+                        #csvwriter = csv.writer.DictWriter(csvfile, pol_no, agent_no)
+                        csvwriter.writerow(list(record.values()))
+'''
 def yieldRecords( aFile, recSize ):
         recBytes= aFile.read(recSize)
         while recBytes:
