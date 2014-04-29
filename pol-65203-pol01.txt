@@ -1,29 +1,4 @@
 
------------------------------- Commands Entered ------------------------------
-set schema = 'SHELTRT';
-select 
-   	policy_no, 
-	agent_no, 
-	line_id, 
-	insured_nm,
-	family_no, 
-	status_cd, 
-	total_premium_am, 
-	tier_cd, 
-	ins_address,
-	ins_city,
-	ins_state
-from
- 	pol01_policy
-where 
-   	ins_zip_cd = '65203' AND status_cd = 'A';
-------------------------------------------------------------------------------
-
-set schema = 'SHELTRT'
-DB20000I  The SQL command completed successfully.
-
-select policy_no, agent_no, line_id, insured_nm, family_no, status_cd, total_premium_am, tier_cd, ins_address, ins_city, ins_state from pol01_policy where ins_zip_cd = '65203' AND status_cd = 'A'
-
 POLICY_NO          AGENT_NO LINE_ID INSURED_NM                                                   FAMILY_NO STATUS_CD TOTAL_PREMIUM_AM TIER_CD INS_ADDRESS                    INS_CITY             INS_STATE
 ------------------ -------- ------- ------------------------------------------------------------ --------- --------- ---------------- ------- ------------------------------ -------------------- ---------
 A200000000         0100             LEHR, GUSTAV J                                               000142459 A                  2000.00         1200 HULEN DR                  COLUMBIA             MO       
