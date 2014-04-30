@@ -1,11 +1,11 @@
+# LoadCSV.py
+# Loads data from CSV file to graph
+
 import argparse, csv, socket, struct
 from time		import time
 from py2neo 	import neo4j, rel, node
 
-JOB_INDEX         = 'job_index'
-SECTION_INDEX     = 'schedule_index'
-#OWNS_INDEX   	  = 'owns_index'
-DEFAULT_BATCH_SIZE = 10000
+
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -22,11 +22,13 @@ def main():
 	
 def connect():
     try:
-        #graph_db = neo4j.GraphDatabaseService("http://localhost:7474/db/data/")
+        graph_db = neo4j.GraphDatabaseService("http://10.8.30.11:7474/db/data/")
+        '''
 		neo4j.authenticate("jobscope.sb01.stations.graphenedb.com:24789",
                    "JobScope", "0W07c5PCLYr4yxPDd9ir")
 
 		graph_db = neo4j.GraphDatabaseService("http://jobscope.sb01.stations.graphenedb.com:24789/db/data/")
+	'''
     except rest.ResourceNotFound:
         print 'Database service not found'
     return graph_db
@@ -37,7 +39,7 @@ def load_file(ifile, bsize, gdb):
     print 'loading batches of %i...' % bsize
  
     with open(ifile, 'rb') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        reader = csv.reader(csvfile, delimiter='|')
         #reader.next()  # skip header
         rowbuffer = []
  
@@ -53,7 +55,18 @@ def load_file(ifile, bsize, gdb):
  
  
 def load_batch(rows, graph_db):
- 
+        
+        pol_query = 'MERGE (pol:Policy { number: pol_num,
+                                        agent_num: agent_num,
+                                        line: line,
+                                        named_insured: named_ins,
+                                        status: status_cd,
+                                        total_prem: total_prem,
+                                        tier: tier_cd
+                                        }'
+        address_query = 'MERGE 
+
+        
     print "%10d  loading %i rows..." % (time(), len(rows))
     batch = neo4j.WriteBatch(graph_db)  # batch is linked to graph database
  

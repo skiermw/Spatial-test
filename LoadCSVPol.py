@@ -18,8 +18,8 @@ def main():
     
     csv_policies = []
      
-    with open('testpol.csv', 'rb') as file:
-        reader = csv.reader(file, delimiter = ',', quotechar = '"')
+    with open('policy.csv', 'rb') as file:
+        reader = csv.reader(file, delimiter = '|', quotechar = '"')
         #next(reader, None) # Skip header row.
         for row in reader:
             csv_policies.append(row)
@@ -56,6 +56,7 @@ def main():
         #print 'family'
      
     batch.run()
+    print 'Family done'
 
 ##############
     # Create Address nodes
@@ -76,7 +77,7 @@ def main():
     ak = Template('$a|$c|$s')
     cypher = "MERGE (a:Address {street:{address}, city:{city}, state:{state}, address_key:{address_key}})"
     
-    print 'params = %s' % params
+    #print 'params = %s' % params
     vars = ['address', 'city', 'state', 'address_key']
 
 
@@ -88,7 +89,7 @@ def main():
      
     for i, e in enumerate(csv_policies):
         #print 'e = %s' % e
-        print 'e[0] = %s' % e[0]
+        #print 'e[0] = %s' % e[0]
         params = dict(zip(vars, [e[8], e[9], e[10], ak.substitute(a=e[8], c=e[9], s=e[10])]))
         if i in range(start, end):
             #print cypher, params
@@ -96,13 +97,13 @@ def main():
         else:
             batch.append_cypher(cypher, params)
             batch.run()
-            print("Batch %s complete." % (end / BATCH_SIZE))
+            print("Address Batch %s complete." % (end / BATCH_SIZE))
             start = end + 1
             end += BATCH_SIZE
      
     #batch.run()
-    for result in batch.stream():
-        print 'a'
+    #for result in batch.stream():
+     #   print 'a'
      
     batch.run()
 
@@ -128,22 +129,22 @@ def main():
      
     for i, e in enumerate(csv_policies):
         #print 'e = %s' % e
-        print 'e[0] = %s' % e[0]
+        #print 'e[0] = %s' % e[0]
         params = dict(zip(vars, [e[0], e[1], e[2], e[3], e[4].strip(), e[5], float(e[6]), e[7], e[8], e[9], e[10], ak.substitute(a=e[8], c=e[9], s=e[10])]))
-        print 'params = %s' % params
+        #print 'params = %s' % params
         if i in range(start, end):
             #print cypher, params
             batch.append_cypher(cypher, params)
         else:
             batch.append_cypher(cypher, params)
             batch.run()
-            print("Batch %s complete." % (end / BATCH_SIZE))
+            print("Policy Batch %s complete." % (end / BATCH_SIZE))
             start = end + 1
             end += BATCH_SIZE
      
-    #batch.run()
-    for result in batch.stream():
-        print 'x'
+    batch.run()
+    #for result in batch.stream():
+    #    print 'x'
     
     #print 'return = %s' % ret
     print("Batch %s complete." % (end / BATCH_SIZE))

@@ -1,0 +1,25 @@
+{% extends "layout_new.html" %}
+{% block body %}
+  
+    <form action="{{ url_for('submit_agent') }}" method=post class=add-entry>
+      <dl>
+        <dt>Agent:
+        <dd><input type=text size=30 name=agent_no>
+      <dl>
+    </form>
+    	<aside><h1>Latitude and Longitude</h1>
+		<ul class=geocodes>
+		  {% for geo in geocodes %}
+			<li><h2><a> {{ geo.lat }}</a></h2>{{ geo.lng|safe }}
+		  {% else %}
+			<li><em>No geocodes found</em>
+		  {% endfor %}
+		</ul>
+	</aside>
+	
+	
+	
+
+	
+  
+{% endblock %}
