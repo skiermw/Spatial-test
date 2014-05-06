@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% block body %}
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -12,10 +13,10 @@
     </script>
     <script type="text/javascript">
     var columbia = new google.maps.LatLng(38.951014,-92.342641);
-	class = geocodes
+	//class = geocodes
 	var addresses = [
-	{% for succ in successors %}
-			"new google.maps.LatLng({{geo.lat}}, {{geo.lng}}),"
+	{% for geo in geocodes %}
+			new google.maps.LatLng({{geo.lat}}, {{geo.lng}}),
 	{% endfor %}
     ];
 	/*class = geocodes;
@@ -52,6 +53,7 @@
 		map = new google.maps.Map(document.getElementById('map-canvas'),
 			mapOptions);
 		
+		//addMarker();
 		drop();
 	}
 
@@ -59,7 +61,7 @@
 		for (var i = 0; i < addresses.length; i++) {
 			setTimeout(function() {
 				addMarker();
-			}, i * 200);
+			}, i );
 		}
 	}
 
@@ -81,3 +83,4 @@
     <div id="map-canvas"/>
   </body>
 </html>
+{% endblock %}

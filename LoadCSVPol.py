@@ -9,16 +9,17 @@ def main():
     
 
     # Start GraphDatabaseService and the batch writer.
-    graph = neo4j.GraphDatabaseService("http://localhost:7474/db/data/")
+    graph = neo4j.GraphDatabaseService("http://10.8.30.5:7474/db/data/")
+    #graph = neo4j.GraphDatabaseService("http://localhost:7474/db/data/")
     batch = neo4j.WriteBatch(graph)
      
 ##############
     # Load data from CSV into a list called policies.
-    # pol_no, agent_no, line, ins_name, fam_no, status, tot_prem, tier, address, city, state
+    # pol_no, agent_no, line, ins_name, fam_no, status, tot_prem, tier, address, city, state, zip_cd
     
     csv_policies = []
      
-    with open('policy.csv', 'rb') as file:
+    with open('pol-D637.txt', 'rb') as file:
         reader = csv.reader(file, delimiter = '|', quotechar = '"')
         #next(reader, None) # Skip header row.
         for row in reader:
@@ -74,11 +75,11 @@ def main():
     addresses = set(addresses)
      
     # Create Family nodes.
-    ak = Template('$a|$c|$s')
-    cypher = "MERGE (a:Address {street:{address}, city:{city}, state:{state}, address_key:{address_key}})"
+    ak = Template('$a|$z')
+    cypher = "MERGE (a:Address {street:{address}, city:{city}, state:{state}, zip:{zip_cd}, address_key:{address_key}})"
     
     #print 'params = %s' % params
-    vars = ['address', 'city', 'state', 'address_key']
+    vars = ['address', 'city', 'state', 'zip_cd', 'address_key']
 
 
 
@@ -90,7 +91,7 @@ def main():
     for i, e in enumerate(csv_policies):
         #print 'e = %s' % e
         #print 'e[0] = %s' % e[0]
-        params = dict(zip(vars, [e[8], e[9], e[10], ak.substitute(a=e[8], c=e[9], s=e[10])]))
+        params = dict(zip(vars, [e[8].strip(), e[9].strip(), e[10].strip(), e[11].strip(), ak.substitute(a=e[8].strip(), z=e[11].strip())]))
         if i in range(start, end):
             #print cypher, params
             batch.append_cypher(cypher, params)
@@ -118,7 +119,7 @@ def main():
              "MERGE (f)-[:HAS_POLICY]->(p:Policy {number:{pol_no}, agent_no:{agent_no}, line:{line}, ins_name:{ins_name}, status:{status}, tot_prem:{tot_prem}, tier:{tier}})" \
              "-[:LOCATED_AT]->(a)"
      
-    vars = ['pol_no', 'agent_no', 'line', 'ins_name', 'family_no', 'status', 'tot_prem', 'tier', 'address', 'city', 'state', 'address_key']
+    vars = ['pol_no', 'agent_no', 'line', 'ins_name', 'family_no', 'status', 'tot_prem', 'tier', 'address', 'city', 'state', 'zip_cd', 'address_key']
 
     
     
@@ -130,7 +131,7 @@ def main():
     for i, e in enumerate(csv_policies):
         #print 'e = %s' % e
         #print 'e[0] = %s' % e[0]
-        params = dict(zip(vars, [e[0], e[1], e[2], e[3], e[4].strip(), e[5], float(e[6]), e[7], e[8], e[9], e[10], ak.substitute(a=e[8], c=e[9], s=e[10])]))
+        params = dict(zip(vars, [e[0].strip(), e[1].strip(), e[2].strip(), e[3].strip(), e[4].strip(), e[5].strip(), float(e[6]), e[7].strip(), e[8].strip(), e[9].strip(), e[10].strip(), e[11].strip(), ak.substitute(a=e[8].strip(), z=e[11].strip())]))
         #print 'params = %s' % params
         if i in range(start, end):
             #print cypher, params

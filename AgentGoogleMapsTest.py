@@ -6,7 +6,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 
 
 # configuration
-QUERY = "MATCH (p:Policy {agent_no:' %s '})-[:LOCATED_AT]->(a) RETURN Distinct(a), a.lat AS lat, a.lng AS lng"
+QUERY = "MATCH (p:Policy {agent_no:'%s'})-[:LOCATED_AT]->(a) RETURN Distinct(a), a.lat AS lat, a.lng AS lng"
  
 DEBUG = True
 SECRET_KEY = 'development key'
@@ -21,7 +21,7 @@ app.config.from_object(__name__)
 
 def connect_db():
     try:
-        graph_db = neo4j.GraphDatabaseService("http://localhost:7474/db/data/")
+        graph_db = neo4j.GraphDatabaseService("http://10.8.30.5:7474/db/data/")
 		
     except rest.ResourceNotFound:
         print 'Database service not found'
@@ -34,7 +34,7 @@ def before_request():
 
 @app.route('/')
 def show_addesses():
-	agent_no = '6399'
+	agent_no = 'D637'
 	print 'agent_no is %s' % agent_no
 	if agent_no <> '':
 		query = QUERY % agent_no
@@ -51,7 +51,7 @@ def show_addesses():
 		
 	print 'geocodes = %s' % geocodes[0]
 	
-	print 'Num predessors %i' % len(geocodes)
+	#print 'Num predessors %i' % len(geocodes)
 	
 	return render_template('show_65203_agent.html',geocodes=geocodes)
 

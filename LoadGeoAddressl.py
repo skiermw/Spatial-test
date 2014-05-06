@@ -5,20 +5,22 @@ from py2neo import neo4j
 import collections
 import csv
 from string import Template
+import datetime
 
 def main():
 
-    
+    start_time = datetime.datetime.now().replace(microsecond=0)
 
     # Start GraphDatabaseService and the batch writer.
-    graph = neo4j.GraphDatabaseService("http://localhost:7474/db/data/")
+    graph = neo4j.GraphDatabaseService("http://10.8.30.5:7474/db/data/")
     batch = neo4j.WriteBatch(graph)
      
 
 ##############
     # Read unique Addess nodes for agent_no
     # Add uniqueness constraint.
-    agent_num = ' 6399 '
+    geocode_ct = 0
+    agent_num = 'D637'
     address_query = "MATCH (p:Policy {agent_no:'%s'})-[:LOCATED_AT]->(a) RETURN DISTINCT(a)" % agent_num
     query = neo4j.CypherQuery(graph, address_query)
     
@@ -28,16 +30,24 @@ def main():
         street = address_node["street"].strip()
         city = address_node["city"].strip()
         state = address_node["state"].strip()
-        zip_code = '65203'
+        zip_code = address_node["zip"].strip()
+        # check to see if lat/lng has already been added to this node
         if address_node["lat"]:
             print 'skipping' 
         else:
+            geocode_ct = geocode_ct+1
             lat, lng = get_geo(street, city, state, zip_code)
             print address_node._id, lat, lng
             update_query = "START n=node(%s) SET n.lat = %s, n.lng = %s return n" % (address_node._id, lat, lng)
             neo4j.CypherQuery(graph, update_query).run()
+
+    end_time = datetime.datetime.now().replace(microsecond=0)
+    elapsed_time = end_time - start_time
+    print 'Elapsed time: %s' % elapsed_time
+    print 'total geocodes processed: %s' %geocode_ct
         
 #####################
+# use the Texas A&M geocode service with my apiKey
 def get_geo(street, city, state, zip_code):
         url = 'http://geoservices.tamu.edu/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V04_01.aspx?'
         in_apiver = '4.01'

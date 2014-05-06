@@ -1,0 +1,27 @@
+
+------------------------------ Commands Entered ------------------------------
+set schema = 'SHELTRT';
+
+select 
+   	strip(policy_no,BOTH),'|', 
+	strip(agent_no,BOTH),'|', 
+	strip(line_id,BOTH),'|', 
+	STRIP(insured_nm),'|',
+	strip(family_no,BOTH),'|', 
+	strip(status_cd,BOTH),'|', 
+	strip(total_premium_am,BOTH),'|', 
+	strip(tier_cd,BOTH),'|', 
+	strip(ins_address,BOTH),'|',
+	strip(ins_city,BOTH),'|',
+	strip(ins_state,BOTH),'|',
+	strip(ins_zip_cd)
+from
+ 	pol01_policy
+where 
+   	agent_no = 'D637'  AND status_cd = 'A' AND NOT line_id  = '';
+------------------------------------------------------------------------------
+
+set schema = 'SHELTRT'
+DB20000I  The SQL command completed successfully.
+
+select strip(policy_no,BOTH),'|', strip(agent_no,BOTH),'|', strip(line_id,BOTH),'|', STRIP(insured_nm),'|', strip(family_no,BOTH),'|', strip(status_cd,BOTH),'|', strip(total_premium_am,BOTH),'|', strip(tier_cd,BOTH),'|', strip(ins_address,BOTH),'|', strip(ins_city,BOTH),'|', strip(ins_state,BOTH),'|', strip(ins_zip_cd) from pol01_policy where agent_no = 'D637'  AND status_cd = 'A' AND NOT line_id  = ''
