@@ -6,7 +6,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 
 
 # configuration
-QUERY = "MATCH (p:Policy {agent_no:'%s'})-[:LOCATED_AT]->(a) RETURN Distinct(a), a.lat AS lat, a.lng AS lng"
+QUERY = "MATCH (p:Policy {agent_no:'%s'})-[:LOCATED_AT]->(a) RETURN Distinct(a), p.ins_name AS name, a.lat AS lat, a.lng AS lng"
  
 DEBUG = True
 SECRET_KEY = 'development key'
@@ -43,7 +43,7 @@ def show_addesses():
 		
 		lat_lng_query = neo4j.CypherQuery(graph_db, query)
 		
-		geocodes = [dict(lat=result.lat, lng=result.lng) for result in lat_lng_query.stream()]
+		geocodes = [dict(name=result.name, lat=result.lat, lng=result.lng) for result in lat_lng_query.stream()]
 		
 		
 	else:

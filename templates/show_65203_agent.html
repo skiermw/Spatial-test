@@ -13,32 +13,19 @@
     </script>
     <script type="text/javascript">
     var columbia = new google.maps.LatLng(38.951014,-92.342641);
-	//class = geocodes
+	
 	var addresses = [
 	{% for geo in geocodes %}
 			new google.maps.LatLng({{geo.lat}}, {{geo.lng}}),
 	{% endfor %}
     ];
-	/*class = geocodes;
-	var addresses = []
-	for (var geo in geocodes) {
-		addresses.push(new google.maps.LatLng(geo.lat, geo.lng));
-	}
-	*/
-	/*var addresses = [
-		new google.maps.LatLng(38.891350, -92.402642),
-		new google.maps.LatLng(38.896138, -92.404702),
-		new google.maps.LatLng(38.888766, -92.403622),
-		new google.maps.LatLng(38.872152, -92.395562)
+	
+	var names = [
+	{% for geo in geocodes %}
+			'{{geo.name}}',
+	{% endfor %}
 	];
-	*/
-	/*var names = [
-		"Mark Workman",
-		"Teresa Magruder",
-		"Frank Thompson",
-		"Todd Thompson"
-	];
-	*/
+	
 	var markers = [];
 	var iterator = 0;
 
@@ -70,8 +57,8 @@
 			position: addresses[iterator],
 			map:map,
 			draggable:false,
-			animation: google.maps.Animation.DROP,
-			//title: names[iterator]
+			//animation: google.maps.Animation.DROP,
+			title: names[iterator]
 		}));
 		iterator++;
 	}
